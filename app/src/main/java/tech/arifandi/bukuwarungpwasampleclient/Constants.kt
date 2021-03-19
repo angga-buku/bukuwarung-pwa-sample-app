@@ -22,4 +22,6 @@ object Constants {
 
     // turn on/off mixed content (both https+http within one page) for API >= 21
     var ENABLE_MIXED_CONTENT = true
+
+    var PRIMARY_COLOR_HEX = "#FF4B43"
 }

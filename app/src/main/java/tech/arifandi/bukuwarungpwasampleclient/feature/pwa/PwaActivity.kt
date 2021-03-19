@@ -159,7 +159,7 @@ class PwaActivity : AppCompatActivity() {
 
     fun syncPWA() {
         webview.post {
-            val script = "sendToken('$token', '$refreshToken', '$userId', '$countryCode');"
+            val script = "sendToken('$token', '$refreshToken', '$userId', '$countryCode', '${Constants.PRIMARY_COLOR_HEX}');"
             webview.evaluateJavascript(script, null)
         }
     }
