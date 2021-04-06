@@ -60,7 +60,7 @@ webview.addJavascriptInterface(JsObject(this), "BukuWarungPWA")
 ```
 fun syncPWA() {
         webview.post {
-            val script = "sendToken('$token', '$refreshToken', '$userId', '$countryCode');"
+            val script = "sendToken('$token', '$refreshToken', '$userId', '$countryCode', '$primaryColorHex');"
             webview.evaluateJavascript(script, null)
         }
 }
