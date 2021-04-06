@@ -120,6 +120,12 @@ class HomeViewModel(
         )
     }
 
+    fun logout() {
+        val editor = sharedPreferences.edit()
+        editor.clear()
+        editor.apply()
+    }
+
     fun initialize() {
         GlobalScope.launch {
             withContext(Dispatchers.Main) {

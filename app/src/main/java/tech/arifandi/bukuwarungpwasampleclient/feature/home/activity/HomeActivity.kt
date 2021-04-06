@@ -1,6 +1,7 @@
 package tech.arifandi.bukuwarungpwasampleclient.feature.home.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -97,6 +98,9 @@ class HomeActivity : AppCompatActivity() {
     private fun setUI() {
         bwLogo.setOnClickListener {
             vm.initialize()
+        }
+        logoutText.setOnClickListener {
+            vm.logout()
         }
         phone_edit_text.addTextChangedListener {
             vm.onPhoneChanged(it.toString())

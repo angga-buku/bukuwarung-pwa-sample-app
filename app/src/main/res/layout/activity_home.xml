@@ -33,6 +33,15 @@
             android:textSize="16sp"
             android:text="Open BukuWarung"/>
 
+        <TextView
+            android:id="@+id/logoutText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            android:text="Logout BukuWarung"/>
+
     </LinearLayout>
 
     <LinearLayout
