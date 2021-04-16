@@ -180,12 +180,14 @@ class PwaActivity : AppCompatActivity() {
 
     // Handle back-press in browser
     override fun onBackPressed() {
-        super.onBackPressed()
-        if (webview.canGoBack()) {
-            webview.goBack()
-        } else {
-            super.onBackPressed()
-        }
+        // needed to evaluate JS as there are some tech stack limitation
+        webview.evaluateJavascript("canGoBack();", ValueCallback {
+            if (it.toBoolean()) {
+                webview.goBack()
+            } else {
+                super.onBackPressed()
+            }
+        })
     }
 
     companion object {
