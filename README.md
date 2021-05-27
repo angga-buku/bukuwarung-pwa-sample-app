@@ -66,3 +66,43 @@ fun syncPWA() {
 }
 ```
 9. After that's done, then the PWA will automatically logged in to the account with given credentials.
+
+## Update May 27th 2021
+
+In order to support redirect (for WA, etc) and download file, you'd need to paste this into your Webview implementation
+
+- For redirect
+```
+// enable HTML5-support
+        // https://stackoverflow.com/questions/9147875/webview-dont-display-javascript-windows-open
+        webview.webChromeClient = object : WebChromeClient() {
+            //simple yet effective redirect/popup blocker
+            override fun onCreateWindow(
+                view: WebView,
+                isDialog: Boolean,
+                isUserGesture: Boolean,
+                resultMsg: Message
+            ): Boolean {
+                val newWebView = WebView(this@PwaActivity)
+                val webSettings = newWebView.settings
+                webSettings.javaScriptEnabled = true
+
+                newWebView.webChromeClient = object : WebChromeClient() {}
+
+                (resultMsg.obj as WebViewTransport).webView = newWebView
+                resultMsg.sendToTarget()
+                return true
+            }
+        }
+```
+
+- for download
+```
+// enable download interceptor
+        // https://stackoverflow.com/questions/10069050/download-file-inside-webview
+        webview.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength
+            ->
+            val i = Intent(Intent.ACTION_VIEW)
+            i.data = Uri.parse(url)
+            startActivity(i) }
+```

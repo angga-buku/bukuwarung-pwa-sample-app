@@ -4,18 +4,21 @@ import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.webkit.*
+import android.webkit.WebView.WebViewTransport
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_pwa.*
 import tech.arifandi.bukuwarungpwasampleclient.Constants
 import tech.arifandi.bukuwarungpwasampleclient.R
 
+
 internal class JsObject(
-        private val pwaActivity: PwaActivity,
+    private val pwaActivity: PwaActivity,
 ) {
 
     @JavascriptInterface
@@ -79,6 +82,7 @@ class PwaActivity : AppCompatActivity() {
         CookieManager.getInstance().setAcceptCookie(true)
         // enable JS
         webSettings.javaScriptEnabled = true
+        webSettings.javaScriptCanOpenWindowsAutomatically = true
         // must be set for our js-popup-blocker:
         webSettings.setSupportMultipleWindows(true)
 
@@ -101,7 +105,7 @@ class PwaActivity : AppCompatActivity() {
         }
 
         // retrieve content from cache primarily if not connected
-        webSettings.cacheMode = WebSettings.LOAD_DEFAULT
+        webSettings.cacheMode = WebSettings.LOAD_NO_CACHE
 
         // set User Agent
         if (Constants.OVERRIDE_USER_AGENT || Constants.POSTFIX_USER_AGENT) {
@@ -116,33 +120,67 @@ class PwaActivity : AppCompatActivity() {
         }
 
         // enable HTML5-support
+        // https://stackoverflow.com/questions/9147875/webview-dont-display-javascript-windows-open
         webview.webChromeClient = object : WebChromeClient() {
             //simple yet effective redirect/popup blocker
-            override fun onCreateWindow(view: WebView, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message): Boolean {
-                val href = view.handler.obtainMessage()
-                view.requestFocusNodeHref(href)
-                val popupUrl = href.data.getString("url")
-                if (popupUrl != null) {
-                    //it's null for most rouge browser hijack ads
-                    webview.loadUrl(popupUrl)
-                    return true
-                }
-                return false
+            override fun onCreateWindow(
+                view: WebView,
+                isDialog: Boolean,
+                isUserGesture: Boolean,
+                resultMsg: Message
+            ): Boolean {
+                val newWebView = WebView(this@PwaActivity)
+                val webSettings = newWebView.settings
+                webSettings.javaScriptEnabled = true
+
+                newWebView.webChromeClient = object : WebChromeClient() {}
+
+                (resultMsg.obj as WebViewTransport).webView = newWebView
+                resultMsg.sendToTarget()
+                return true
             }
         }
 
+        // enable download interceptor
+        // https://stackoverflow.com/questions/10069050/download-file-inside-webview
+        webview.setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength
+            ->
+            val i = Intent(Intent.ACTION_VIEW)
+            i.data = Uri.parse(url)
+            startActivity(i) }
+
         // Set up Webview client
         webview.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): Boolean {
+                // do your handling codes here, which url is the requested url
+                // probably you need to open that url rather than redirect:
+                val url = request?.url?.toString() ?: ""
+                view?.loadUrl(url)
+                return false; // then it is not handled by default action
+            }
+
             // handle loading error by showing the offline screen
             @Deprecated("")
-            override fun onReceivedError(view: WebView, errorCode: Int, description: String, failingUrl: String) {
+            override fun onReceivedError(
+                view: WebView,
+                errorCode: Int,
+                description: String,
+                failingUrl: String
+            ) {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     handleLoadError(errorCode)
                 }
             }
 
             @TargetApi(Build.VERSION_CODES.M)
-            override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
+            override fun onReceivedError(
+                view: WebView,
+                request: WebResourceRequest,
+                error: WebResourceError
+            ) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     // new API method calls this on every error for each resource.
                     // we only want to interfere if the page itself got problems.
@@ -193,12 +231,12 @@ class PwaActivity : AppCompatActivity() {
     companion object {
 
         fun getIntent(
-                context: Context,
-                token: String,
-                refreshToken: String,
-                userId: String,
-                countryCode: String,
-            ): Intent {
+            context: Context,
+            token: String,
+            refreshToken: String,
+            userId: String,
+            countryCode: String,
+        ): Intent {
             val intent = Intent(context, PwaActivity::class.java)
             intent.putExtra(TOKEN_KEY, token)
             intent.putExtra(REFRESH_TOKEN_KEY, refreshToken)
