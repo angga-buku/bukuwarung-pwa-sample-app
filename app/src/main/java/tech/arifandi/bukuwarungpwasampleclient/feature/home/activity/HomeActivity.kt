@@ -32,7 +32,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setVM() {
-        vm.state.observe(this, {
+        vm.state.observe(this) {
             when (it?.stepState) {
                 HomeViewModelStepState.IDLE -> {
                     bwLogoContainer.visibility = View.VISIBLE
@@ -64,11 +64,11 @@ class HomeActivity : AppCompatActivity() {
                     val refreshToken = sharedPref[KEnum.Companion.SharedPref.RefreshToken.name, ""]
                     val userId = sharedPref[KEnum.Companion.SharedPref.UserId.name, ""]
                     val intent = PwaActivity.getIntent(
-                            this,
-                            token = token!!,
-                            refreshToken = refreshToken!!,
-                            userId = userId!!,
-                            countryCode = "+62"
+                        this,
+                        token = token!!,
+                        refreshToken = refreshToken!!,
+                        userId = userId!!,
+                        countryCode = "+62"
                     )
                     startActivity(intent)
 
@@ -92,7 +92,7 @@ class HomeActivity : AppCompatActivity() {
                     error.visibility = View.VISIBLE
                 }
             }
-        })
+        }
     }
 
     private fun setUI() {
