@@ -37,7 +37,7 @@ class HomeRepository(private val api: HomeApi) : BaseRepository() {
             countryCode = countryCode,
             phone = phone,
             method = method,
-            action = "SEND",
+            action = "LOGIN_OTP",
             clientId = KCredential.ClientId,
             clientSecret = KCredential.ClientSecret,
         )

@@ -14,7 +14,7 @@ data class SendOtpRequest(
     @Json(name = "action")
     val action: String,
     @Json(name = "deviceId")
-    val deviceId: String? = null,
+    val deviceId: String? = "",
     @Json(name = "clientId")
     val clientId: String,
     @Json(name = "clientSecret")

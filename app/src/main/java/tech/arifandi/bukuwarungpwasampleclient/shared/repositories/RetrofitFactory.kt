@@ -23,8 +23,9 @@ object RetrofitFactory {
         val newRequest = chain.request()
             .newBuilder()
             .url(newUrl)
-            .addHeader("x-app-version-name", KCredential.appVersionName)
-            .addHeader("x-app-version-code", KCredential.appVersionCode)
+            .addHeader("X-APP-VERSION-NAME", KCredential.appVersionName)
+            .addHeader("X-APP-VERSION-CODE", KCredential.appVersionCode)
+            .addHeader("buku-origin", "bukuwarung-app")
             .build()
 
         chain.proceed(newRequest)

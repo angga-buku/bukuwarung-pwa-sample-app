@@ -18,7 +18,8 @@
         android:theme="@style/AppTheme"
         android:fullBackupContent="@xml/backup_descriptor"
         tools:ignore="AllowBackup"
-        tools:targetApi="n">
+        tools:targetApi="n"
+        android:usesCleartextTraffic="true">
         <activity android:name=".feature.home.activity.DetailBookActivity" />
         <activity android:name=".feature.home.activity.HomeActivity" />
         <activity android:name=".feature.pwa.PwaActivity" />
